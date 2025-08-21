@@ -1,0 +1,11 @@
+{
+  "region": "west",
+  "risk_mode": "royal_only",
+  "buy_order_fee": 0.015,
+  "sell_order_fee": 0.015,
+  "sales_tax": 0.065,
+  "transport_buffer": 0.03,
+  "mount_type": "OX_T6",
+  "avg_load_pct": 0.6,
+  "capital_cap": 1000000
+}

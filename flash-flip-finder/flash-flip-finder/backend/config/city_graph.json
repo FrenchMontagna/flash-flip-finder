@@ -1,0 +1,105 @@
+{
+  "cities": [
+    "LYMHURST",
+    "MARTLOCK",
+    "BRIDGEWATCH",
+    "FORT_STERLING",
+    "THETFORD",
+    "CAERLEON"
+  ],
+  "defaults": {
+    "hop_base_minutes": 4.0,
+    "risk_factors": {
+      "blue": 0.0,
+      "yellow": 0.2,
+      "red": 0.8,
+      "black": 1.0
+    }
+  },
+  "edges": [
+    {
+      "from": "LYMHURST",
+      "to": "MARTLOCK",
+      "zone_type": "yellow",
+      "distance_hops": 2,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "LYMHURST",
+      "to": "THETFORD",
+      "zone_type": "yellow",
+      "distance_hops": 2,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "MARTLOCK",
+      "to": "FORT_STERLING",
+      "zone_type": "yellow",
+      "distance_hops": 2,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "BRIDGEWATCH",
+      "to": "THETFORD",
+      "zone_type": "yellow",
+      "distance_hops": 2,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "FORT_STERLING",
+      "to": "THETFORD",
+      "zone_type": "yellow",
+      "distance_hops": 2,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "THETFORD",
+      "to": "LYMHURST",
+      "zone_type": "yellow",
+      "distance_hops": 2,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "MARTLOCK",
+      "to": "BRIDGEWATCH",
+      "zone_type": "yellow",
+      "distance_hops": 3,
+      "risk_factor": 0.2
+    },
+    {
+      "from": "CAERLEON",
+      "to": "LYMHURST",
+      "zone_type": "red",
+      "distance_hops": 2,
+      "risk_factor": 0.8
+    },
+    {
+      "from": "CAERLEON",
+      "to": "MARTLOCK",
+      "zone_type": "red",
+      "distance_hops": 2,
+      "risk_factor": 0.8
+    },
+    {
+      "from": "CAERLEON",
+      "to": "BRIDGEWATCH",
+      "zone_type": "red",
+      "distance_hops": 3,
+      "risk_factor": 0.8
+    },
+    {
+      "from": "CAERLEON",
+      "to": "FORT_STERLING",
+      "zone_type": "red",
+      "distance_hops": 3,
+      "risk_factor": 0.8
+    },
+    {
+      "from": "CAERLEON",
+      "to": "THETFORD",
+      "zone_type": "red",
+      "distance_hops": 3,
+      "risk_factor": 0.8
+    }
+  ]
+}

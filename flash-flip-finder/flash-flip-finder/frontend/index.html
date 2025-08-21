@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset=\"utf-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <title>Flash Flip Finder</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial; margin: 24px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
+    th { background: #f7f7f7; position: sticky; top: 0; }
+    .controls { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+    input, select, button { padding: 8px; font-size: 14px; }
+    .muted { color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Flash Flip Finder</h1>
+  <div class=\"controls\">
+    <input id=\"cities\" placeholder=\"Cities CSV\" value=\"LYMHURST,MARTLOCK,BRIDGEWATCH,FORT_STERLING,THETFORD,CAERLEON\" />
+    <input id=\"tiers\" placeholder=\"Tiers (e.g., 4-6)\" value=\"4-6\" />
+    <input id=\"enchants\" placeholder=\"Enchants (e.g., 0,1)\" value=\"0,1\" />
+    <select id=\"risk\">
+      <option value=\"royal_only\" selected>royal_only</option>
+      <option value=\"balanced\">balanced</option>
+      <option value=\"aggressive\">aggressive</option>
+    </select>
+    <input id=\"capital\" type=\"number\" value=\"1000000\" />
+    <input id=\"min_roi\" type=\"number\" step=\"0.01\" value=\"0.12\" />
+  </div>
+  <div style=\"margin-top:8px;\">
+    <button onclick=\"loadOpps()\">Find Opportunities</button>
+    <button onclick=\"exportCSV()\">Export CSV</button>
+    <span class=\"muted\">Backend: http://localhost:8080</span>
+  </div>
+  <table id=\"tbl\">
+    <thead><tr>
+      <th>Item</th><th>Buy City</th><th>Buy ≤</th><th>Sell City</th><th>Sell ≥</th>
+      <th>Net ROI</th><th>Qty</th><th>Profit/hr</th><th>Route</th><th>Freshness</th><th>Conf</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+async function loadOpps(){
+  const q = new URLSearchParams({
+    cities: document.getElementById('cities').value,
+    tiers: document.getElementById('tiers').value,
+    enchants: document.getElementById('enchants').value,
+    risk: document.getElementById('risk').value,
+    capital: document.getElementById('capital').value,
+    min_roi: document.getElementById('min_roi').value,
+    limit: 25,
+  });
+  const r = await fetch('http://localhost:8080/opportunities?' + q.toString());
+  const data = await r.json();
+  const tb = document.querySelector('#tbl tbody');
+  tb.innerHTML='';
+  for(const o of data){
+    const tr = document.createElement('tr');
+    const routeStr = `${o.route.nodes.join('→')} (${o.route.minutes_est}m, ${o.route.risk_label})`;
+    tr.innerHTML = `
+      <td>${o.item_id}</td>
+      <td>${o.buy_city}</td>
+      <td>${o.buy_at_or_below.toLocaleString()}</td>
+      <td>${o.sell_city}</td>
+      <td>${o.sell_at_or_above.toLocaleString()}</td>
+      <td>${(o.net_roi*100).toFixed(1)}%</td>
+      <td>${o.qty_recommended}</td>
+      <td>${o.profit_per_hour.toLocaleString()}</td>
+      <td>${routeStr}</td>
+      <td>${o.freshness_min}m</td>
+      <td>${(o.confidence*100).toFixed(0)}%</td>
+    `;
+    tb.appendChild(tr);
+  }
+}
+
+function exportCSV(){
+  const rows = [['Item','Buy City','Buy ≤','Sell City','Sell ≥','Net ROI','Qty','Profit/hr','Route','Freshness','Confidence']];
+  const trs = document.querySelectorAll('#tbl tbody tr');
+  trs.forEach(tr=>{
+    rows.push(Array.from(tr.children).map(td=>td.textContent));
+  });
+  const csv = rows.map(r=>r.map(x=>`"${(x||'').replace(/"/g,'\"')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'flash-flip-opportunities.csv';
+  a.click();
+}
+</script>
+</body>
+</html>

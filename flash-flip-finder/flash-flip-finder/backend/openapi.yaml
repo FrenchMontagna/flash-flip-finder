@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: Flash Flip Finder API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /opportunities:
+    get:
+      summary: Ranked flip opportunities with route plans
+      parameters:
+        - in: query
+          name: cities
+          required: false
+          schema: {type: string, example: "LYMHURST,MARTLOCK,BRIDGEWATCH,FORT_STERLING,THETFORD,CAERLEON"}
+        - in: query
+          name: tiers
+          required: false
+          schema: {type: string, example: "4-6"}
+        - in: query
+          name: enchants
+          required: false
+          schema: {type: string, example: "0,1"}
+        - in: query
+          name: min_roi
+          required: false
+          schema: {type: number, format: float, default: 0.1}
+        - in: query
+          name: region
+          required: false
+          schema: {type: string, enum: [west,east,europe], default: west}
+        - in: query
+          name: risk
+          required: false
+          schema: {type: string, enum: [royal_only,balanced,aggressive], default: royal_only}
+        - in: query
+          name: capital
+          required: false
+          schema: {type: integer, default: 1000000}
+        - in: query
+          name: limit
+          required: false
+          schema: {type: integer, default: 25}
+      responses:
+        '200':
+          description: List of opportunities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Opportunity'
+  /route:
+    get:
+      summary: Risk-adjusted shortest route between two cities
+      parameters:
+        - in: query
+          name: from
+          required: true
+          schema: {type: string}
+        - in: query
+          name: to
+          required: true
+          schema: {type: string}
+        - in: query
+          name: risk
+          required: false
+          schema: {type: string, enum: [royal_only,balanced,aggressive], default: royal_only}
+        - in: query
+          name: mount
+          required: false
+          schema: {type: string, example: "OX_T6"}
+        - in: query
+          name: load_pct
+          required: false
+          schema: {type: number, default: 0.6}
+      responses:
+        '200':
+          description: Route info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutePlan'
+components:
+  schemas:
+    Opportunity:
+      type: object
+      properties:
+        item_id: {type: string, example: "T6_BAG"}
+        item_name: {type: string}
+        buy_city: {type: string, example: "LYMHURST"}
+        buy_at_or_below: {type: integer, example: 12400}
+        sell_city: {type: string, example: "MARTLOCK"}
+        sell_at_or_above: {type: integer, example: 15100}
+        net_per_unit: {type: integer, example: 2100}
+        net_roi: {type: number, example: 0.18}
+        qty_recommended: {type: integer, example: 27}
+        route: { $ref: '#/components/schemas/RoutePlan' }
+        profit_per_hour: {type: integer, example: 378000}
+        confidence: {type: number, example: 0.74}
+        freshness_min: {type: integer, example: 2}
+    RoutePlan:
+      type: object
+      properties:
+        risk_mode: {type: string}
+        nodes: {type: array, items: {type: string}}
+        minutes_est: {type: number}
+        risk_label: {type: string}
+        mount_suggested: {type: string}
+        max_load_pct: {type: number}
